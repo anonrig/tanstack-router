@@ -31,6 +31,19 @@ describe('encode function', () => {
     const queryString = encode(obj)
     expect(queryString).toEqual('foo%3Dbar=1')
   })
+
+  it('should match URLSearchParams encoding for form-urlencoded reserved characters', () => {
+    const obj = { q: 'a b', x: '!~*()~', n: 1 }
+    const expected = new URLSearchParams(
+      Object.entries(obj).map(([key, value]) => [key, String(value)]),
+    ).toString()
+    expect(encode(obj)).toEqual(expected)
+  })
+
+  it('should return the same string when encoding the same object again', () => {
+    const obj = { token: 'foo', key: 'value' }
+    expect(encode(obj)).toBe(encode(obj))
+  })
 })
 
 describe('decode function', () => {
