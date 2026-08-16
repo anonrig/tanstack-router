@@ -1,11 +1,17 @@
 const dehydrateCache = new Map<string, string>()
 const DEHYDRATE_CACHE_MAX = 256
+const DEHYDRATE_CACHE_MAX_ID_LENGTH = 4096
 
 export function dehydrateSsrMatchId(id: string): string {
   const cached = dehydrateCache.get(id)
-  if (cached !== undefined) return cached
+  if (cached !== undefined) {
+    return cached
+  }
 
   const result = dehydrateSsrMatchIdUncached(id)
+  if (id.length > DEHYDRATE_CACHE_MAX_ID_LENGTH) {
+    return result
+  }
   if (dehydrateCache.size >= DEHYDRATE_CACHE_MAX) {
     dehydrateCache.delete(dehydrateCache.keys().next().value!)
   }

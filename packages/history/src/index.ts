@@ -650,7 +650,9 @@ let lastHash = ''
 function historyState(
   state: ParsedHistoryState | undefined,
 ): ParsedHistoryState {
-  if (state) return state
+  if (state) {
+    return state
+  }
   const addedKey = createRandomKey()
   return { [stateIndexKey]: 0, key: addedKey, __TSR_key: addedKey }
 }
@@ -703,19 +705,18 @@ export function parseHref(
   const hashIndex = sanitizedHref.indexOf('#')
   const searchIndex = sanitizedHref.indexOf('?')
 
-  const pathname = sanitizedHref.substring(
-    0,
-    hashIndex > 0
-      ? searchIndex > 0
-        ? Math.min(hashIndex, searchIndex)
-        : hashIndex
-      : searchIndex > 0
-        ? searchIndex
-        : sanitizedHref.length,
-  )
-  const hash = hashIndex > -1 ? sanitizedHref.substring(hashIndex) : ''
+  let pathEnd = sanitizedHref.length
+  if (hashIndex >= 0 && searchIndex >= 0) {
+    pathEnd = Math.min(hashIndex, searchIndex)
+  } else if (hashIndex >= 0) {
+    pathEnd = hashIndex
+  } else if (searchIndex >= 0) {
+    pathEnd = searchIndex
+  }
+  const pathname = sanitizedHref.substring(0, pathEnd)
+  const hash = hashIndex >= 0 ? sanitizedHref.substring(hashIndex) : ''
   const search =
-    searchIndex > -1
+    searchIndex >= 0
       ? sanitizedHref.slice(
           searchIndex,
           hashIndex === -1 ? undefined : hashIndex,

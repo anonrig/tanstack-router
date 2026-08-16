@@ -22,7 +22,9 @@ export function joinPaths(paths: Array<string | undefined>) {
 /** Remove repeated slashes from a path string. */
 export function cleanPath(path: string) {
   // Most paths never contain '//' — skip the regex on that common case.
-  if (path.indexOf('//') === -1) return path
+  if (path.indexOf('//') === -1) {
+    return path
+  }
   return path.replace(/\/{2,}/g, '/')
 }
 
@@ -260,10 +262,12 @@ export function interpolatePath({
   let isMissingParams = false
   const usedParams: Record<string, unknown> = Object.create(null)
 
-  if (!path || path === '/')
+  if (!path || path === '/') {
     return { interpolatedPath: '/', usedParams, isMissingParams }
-  if (!path.includes('$'))
+  }
+  if (!path.includes('$')) {
     return { interpolatedPath: path, usedParams, isMissingParams }
+  }
 
   // Fast path for common templates like `/posts/$id` or `/files/$`.
   // Braced segments (`{...}`) are more complex (prefix/suffix/optional) and are
@@ -275,16 +279,24 @@ export function interpolatePath({
 
     while (cursor < length) {
       // Skip slashes between segments. '/' code is 47
-      while (cursor < length && path.charCodeAt(cursor) === 47) cursor++
-      if (cursor >= length) break
+      while (cursor < length && path.charCodeAt(cursor) === 47) {
+        cursor++
+      }
+      if (cursor >= length) {
+        break
+      }
 
       const start = cursor
       let end = path.indexOf('/', cursor)
-      if (end === -1) end = length
+      if (end === -1) {
+        end = length
+      }
       cursor = end
 
       const part = path.substring(start, end)
-      if (!part) continue
+      if (!part) {
+        continue
+      }
 
       // `$id` or `$` (splat). '$' code is 36
       if (part.charCodeAt(0) === 36) {
@@ -316,7 +328,9 @@ export function interpolatePath({
       }
     }
 
-    if (path.endsWith('/')) joined += '/'
+    if (path.endsWith('/')) {
+      joined += '/'
+    }
 
     const interpolatedPath = joined || '/'
     return { usedParams, interpolatedPath, isMissingParams }
